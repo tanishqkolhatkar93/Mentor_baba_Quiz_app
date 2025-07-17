@@ -152,8 +152,7 @@ An example file (`quiz_questions.xlsx`) is included in the repository.
  <img title="a title" alt="Alt text" src="https://github.com/tanishqkolhatkar93/Mentor_baba_Quiz_app/blob/main/Screenshot%202025-07-17%20224516.png">
  
 - **Quiz Results Summary**: Final score and a breakdown of correct/incorrect answers.
--  <img title="a title" alt="Alt text" src="
-  https://github.com/tanishqkolhatkar93/Mentor_baba_Quiz_app/blob/main/Screenshot%202025-07-17%20224549.png">
+   <img title="a title" alt="Alt text" src="https://github.com/tanishqkolhatkar93/Mentor_baba_Quiz_app/blob/main/Screenshot%202025-07-17%20224549.png">
  
 
 
