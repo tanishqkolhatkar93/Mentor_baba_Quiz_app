@@ -144,9 +144,9 @@ An example file (`quiz_questions.xlsx`) is included in the repository.
 - **Restart**: Click "Go to Login" to return to the authentication page and start a new quiz session.
 
 ## Screenshots
-(Please replace these placeholders with actual screenshots of your running application. You can upload images directly to your GitHub repository and link them here.)
 
 - **Login/Registration Page**: Initial screen for user authentication and Excel upload.
+  <img title="a title" alt="Alt text" src="/images/boo.svg">
 - **Quiz Interface**: A question displayed with options, timer, and navigation buttons.
 - **Quiz Results Summary**: Final score and a breakdown of correct/incorrect answers.
 
@@ -158,3 +158,6 @@ Contributions are welcome! If you have suggestions for improvements or find any 
 - Commit your changes (`git commit -m 'Add new feature'`).
 - Push to the branch (`git push origin feature/your-feature-name`).
 - Open a Pull Request.
+
+## License
+This project is open-source and available under the MIT License.
