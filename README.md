@@ -146,7 +146,7 @@ An example file (`quiz_questions.xlsx`) is included in the repository.
 ## Screenshots
 
 - **Login/Registration Page**: Initial screen for user authentication and Excel upload.
-  <img title="a title" alt="Alt text" src="/images/boo.svg">
+  <img title="a title" alt="Alt text" src="https://github.com/tanishqkolhatkar93/Mentor_baba_Quiz_app/blob/main/Screenshot%202025-07-17%20224438.png">
 - **Quiz Interface**: A question displayed with options, timer, and navigation buttons.
 - **Quiz Results Summary**: Final score and a breakdown of correct/incorrect answers.
 
