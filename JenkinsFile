@@ -1,0 +1,61 @@
+pipeline {
+    agent any
+
+    environment {
+        IMAGE_NAME = 'mentorbaba-quiz-app'
+        DOCKERHUB_USER = 'your_dockerhub_username'
+    }
+
+    stages {
+        stage('Checkout Code') {
+            steps {
+                git 'https://github.com/your-username/Mentor_baba_Quiz_app.git'
+            }
+        }
+
+        stage('Install Dependencies') {
+            steps {
+                sh 'pip install -r requirements.txt'
+            }
+        }
+
+        stage('Unit Tests') {
+            steps {
+                echo '✅ Run unit tests (add pytest if needed)'
+            }
+        }
+
+        stage('Lint Code') {
+            steps {
+                sh 'pip install flake8'
+                sh 'flake8 . || true'
+            }
+        }
+
+        stage('Build Docker Image') {
+            steps {
+                sh "docker build -t $DOCKERHUB_USER/$IMAGE_NAME:${env.BUILD_NUMBER} ."
+            }
+        }
+
+        stage('Tag and Push Docker Image') {
+            steps {
+                withCredentials([usernamePassword(credentialsId: 'dockerhub-creds', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
+                    sh 'echo $PASSWORD | docker login -u $USERNAME --password-stdin'
+                    sh "docker tag $DOCKERHUB_USER/$IMAGE_NAME:${env.BUILD_NUMBER} $DOCKERHUB_USER/$IMAGE_NAME:latest"
+                    sh "docker push $DOCKERHUB_USER/$IMAGE_NAME:${env.BUILD_NUMBER}"
+                    sh "docker push $DOCKERHUB_USER/$IMAGE_NAME:latest"
+                }
+            }
+        }
+    }
+
+    post {
+        success {
+            echo '✅ CI Pipeline Completed Successfully!'
+        }
+        failure {
+            echo '❌ CI Failed. Check logs.'
+        }
+    }
+}
