@@ -1,0 +1,756 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz Application</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* Basic Reset & Font */
+        body {
+            font-family: 'Inter', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f0f2f5;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            color: #333;
+        }
+
+        /* Container for the entire app */
+        .app-container {
+            background-color: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+            width: 100%;
+            max-width: 800px;
+            box-sizing: border-box;
+            margin: 20px;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        /* Section Styling */
+        .section {
+            display: none; /* Hidden by default */
+            animation: fadeIn 0.5s ease-out;
+        }
+        .section.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Form Styling */
+        .form-group {
+            margin-bottom: 15px;
+            text-align: left;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #555;
+        }
+        .form-group input[type="text"],
+        .form-group input[type="password"],
+        .form-group input[type="file"] {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            box-sizing: border-box;
+            font-size: 16px;
+            transition: border-color 0.3s ease;
+        }
+        .form-group input[type="text"]:focus,
+        .form-group input[type="password"]:focus,
+        .form-group input[type="file"]:focus {
+            outline: none;
+            border-color: #007bff;
+            box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.25);
+        }
+
+        /* Button Styling */
+        .btn {
+            background-color: #007bff;
+            color: white;
+            padding: 12px 25px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+            margin: 5px;
+            box-shadow: 0 4px 10px rgba(0, 123, 255, 0.2);
+        }
+        .btn:hover {
+            background-color: #0056b3;
+            transform: translateY(-2px);
+        }
+        .btn:active {
+            transform: translateY(0);
+            box-shadow: 0 2px 5px rgba(0, 123, 255, 0.3);
+        }
+        .btn-secondary {
+            background-color: #6c757d;
+            box-shadow: 0 4px 10px rgba(108, 117, 125, 0.2);
+        }
+        .btn-secondary:hover {
+            background-color: #5a6268;
+        }
+        .btn-success {
+            background-color: #28a745;
+            box-shadow: 0 4px 10px rgba(40, 167, 69, 0.2);
+        }
+        .btn-success:hover {
+            background-color: #218838;
+        }
+        .btn-danger {
+            background-color: #dc3545;
+            box-shadow: 0 4px 10px rgba(220, 53, 69, 0.2);
+        }
+        .btn-danger:hover {
+            background-color: #c82333;
+        }
+
+        /* Message Box */
+        .message-box {
+            background-color: #e9ecef;
+            border: 1px solid #ced4da;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 20px;
+            font-size: 15px;
+            color: #495057;
+            text-align: center;
+            display: none; /* Hidden by default */
+        }
+        .message-box.active {
+            display: block;
+        }
+        .message-box.success {
+            background-color: #d4edda;
+            border-color: #c3e6cb;
+            color: #155724;
+        }
+        .message-box.error {
+            background-color: #f8d7da;
+            border-color: #f5c6cb;
+            color: #721c24;
+        }
+
+        /* Quiz Section Specifics */
+        #quiz-section h2 {
+            color: #007bff;
+            margin-bottom: 20px;
+        }
+        #timer {
+            font-size: 2.5em;
+            font-weight: 700;
+            color: #dc3545;
+            margin-bottom: 20px;
+            animation: pulse 1s infinite alternate;
+        }
+        @keyframes pulse {
+            from { transform: scale(1); opacity: 1; }
+            to { transform: scale(1.05); opacity: 0.8; }
+        }
+
+        #question-container {
+            background-color: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 10px;
+            padding: 25px;
+            margin-bottom: 20px;
+            text-align: left;
+            box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.05);
+        }
+        #question-text {
+            font-size: 1.4em;
+            font-weight: 600;
+            margin-bottom: 20px;
+            line-height: 1.5;
+            color: #343a40;
+        }
+        .options-container {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        .option-label {
+            display: flex;
+            align-items: center;
+            background-color: #e9f5ff; /* Light blue for options */
+            padding: 15px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.3s ease, border-color 0.3s ease;
+            border: 1px solid #cce5ff;
+        }
+        .option-label:hover {
+            background-color: #d0e9ff;
+            border-color: #a6d8ff;
+        }
+        .option-label input[type="radio"] {
+            margin-right: 15px;
+            transform: scale(1.4); /* Make radio buttons larger */
+            accent-color: #007bff; /* Color for checked radio */
+        }
+        .option-label span {
+            font-size: 1.1em;
+            font-weight: 500;
+            color: #333;
+        }
+
+        /* Navigation Buttons */
+        .navigation-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 8px;
+            margin-top: 20px;
+            max-height: 150px; /* Limit height for scroll if many questions */
+            overflow-y: auto; /* Enable vertical scroll */
+            padding: 10px;
+            border: 1px solid #eee;
+            border-radius: 8px;
+            background-color: #fdfdfd;
+        }
+        .nav-btn {
+            background-color: #e0e0e0;
+            color: #555;
+            padding: 8px 12px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.9em;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+            min-width: 40px; /* Ensure consistent size */
+        }
+        .nav-btn:hover {
+            background-color: #d0d0d0;
+            transform: translateY(-1px);
+        }
+        .nav-btn.active {
+            background-color: #007bff;
+            color: white;
+            border-color: #007bff;
+            font-weight: 700;
+        }
+        .nav-btn.answered {
+            background-color: #28a745; /* Green for answered */
+            color: white;
+            border-color: #28a745;
+        }
+        .nav-btn.active.answered {
+            background-color: #0056b3; /* Darker blue if active and answered */
+        }
+
+        .quiz-controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 20px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .quiz-controls .btn {
+            flex-grow: 1; /* Allow buttons to grow */
+            min-width: 120px; /* Ensure buttons don't get too small */
+        }
+
+        /* Results Section Specifics */
+        #results-section h2 {
+            color: #007bff;
+            margin-bottom: 20px;
+        }
+        #score-display {
+            font-size: 2.2em;
+            font-weight: 700;
+            color: #28a745;
+            margin-bottom: 25px;
+        }
+        .result-item {
+            background-color: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 15px;
+            text-align: left;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        }
+        .result-item.correct {
+            border-left: 5px solid #28a745;
+            background-color: #e6ffe6;
+        }
+        .result-item.incorrect {
+            border-left: 5px solid #dc3545;
+            background-color: #ffe6e6;
+        }
+        .result-item p {
+            margin: 5px 0;
+            font-size: 1.1em;
+        }
+        .result-item .question-text {
+            font-weight: 600;
+            color: #343a40;
+            margin-bottom: 10px;
+        }
+        .result-item .your-answer, .result-item .correct-answer {
+            font-size: 0.95em;
+            color: #555;
+        }
+        .result-item .your-answer strong, .result-item .correct-answer strong {
+            color: #000;
+        }
+        .result-item .correct-answer {
+            color: #28a745;
+            font-weight: 500;
+        }
+        .result-item.incorrect .your-answer {
+            color: #dc3545;
+        }
+
+        /* Responsive Adjustments */
+        @media (max-width: 600px) {
+            .app-container {
+                padding: 20px;
+                margin: 10px;
+            }
+            .btn {
+                padding: 10px 20px;
+                font-size: 15px;
+            }
+            #timer {
+                font-size: 2em;
+            }
+            #question-text {
+                font-size: 1.2em;
+            }
+            .option-label {
+                padding: 12px;
+            }
+            .option-label span {
+                font-size: 1em;
+            }
+            .quiz-controls {
+                flex-direction: column;
+            }
+            .quiz-controls .btn {
+                width: 100%;
+                margin: 5px 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Message Box for notifications -->
+        <div id="message-box" class="message-box"></div>
+
+        <!-- Login/Registration Section -->
+        <div id="auth-section" class="section active">
+            <h2>Welcome to the Quiz App!</h2>
+            <p>Please Login or Register</p>
+
+            <div class="form-group">
+                <label for="auth-username">Username:</label>
+                <input type="text" id="auth-username" placeholder="Enter your username" required>
+            </div>
+            <div class="form-group">
+                <label for="auth-password">Password:</label>
+                <input type="password" id="auth-password" placeholder="Enter your password" required>
+            </div>
+            <button id="login-btn" class="btn">Login</button>
+            <button id="register-btn" class="btn btn-secondary">Register</button>
+            <hr style="margin: 20px 0; border-color: #eee;">
+            <h3>Admin: Upload Questions</h3>
+            <div class="form-group">
+                <label for="excel-file">Upload Excel (Admin Only):</label>
+                <input type="file" id="excel-file" accept=".xlsx, .xls">
+            </div>
+            <button id="upload-excel-btn" class="btn btn-success">Upload Questions</button>   
+        </div>
+
+        <!-- Quiz Section -->
+        <div id="quiz-section" class="section">
+            <h2 id="welcome-user">Hello, User!</h2>
+            <div id="timer">30</div>
+
+            <div id="question-container">
+                <p id="question-text">Loading question...</p>
+                <div class="options-container" id="options-container">
+                    <!-- Options will be dynamically loaded here -->
+                </div>
+            </div>
+
+            <div class="navigation-buttons" id="navigation-buttons">
+                <!-- Navigation buttons will be loaded here -->
+            </div>
+
+            <div class="quiz-controls">
+                <button id="prev-btn" class="btn btn-secondary">Previous</button>  
+                <button id="next-btn" class="btn">Next</button>
+                <button id="submit-quiz-btn" class="btn btn-danger">Submit Quiz</button>
+            </div>
+        </div>
+
+        <!-- Results Section -->
+        <div id="results-section" class="section">
+            <h2>Quiz Results</h2>
+            <p id="score-display">Your Score: 0 / 0</p>
+            <div id="results-summary">
+                <!-- Detailed results will be loaded here -->
+            </div>
+            <button id="restart-quiz-btn" class="btn btn-primary">Go to Login</button>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE_URL = 'http://127.0.0.1:5000'; // Make sure this matches your Flask app's address
+
+        let currentSection = 'auth-section';
+        let questions = [];
+        let userAnswers = {}; // {questionId: selectedOptionChar (a,b,c,d)}
+        let currentQuestionIndex = 0;
+        let timerInterval;
+        const TIME_PER_QUESTION = 30; // seconds
+
+        // --- DOM Elements ---
+        const messageBox = document.getElementById('message-box');
+        const authSection = document.getElementById('auth-section');
+        const quizSection = document.getElementById('quiz-section');
+        const resultsSection = document.getElementById('results-section');
+
+        const authUsernameInput = document.getElementById('auth-username');
+        const authPasswordInput = document.getElementById('auth-password');
+        const loginBtn = document.getElementById('login-btn');
+        const registerBtn = document.getElementById('register-btn');
+        const excelFileInput = document.getElementById('excel-file');
+        const uploadExcelBtn = document.getElementById('upload-excel-btn');
+
+        const welcomeUserElement = document.getElementById('welcome-user');
+        const timerElement = document.getElementById('timer');
+        const questionTextElement = document.getElementById('question-text');
+        const optionsContainer = document.getElementById('options-container');
+        const navigationButtonsContainer = document.getElementById('navigation-buttons');
+        const prevBtn = document.getElementById('prev-btn');
+        const nextBtn = document.getElementById('next-btn');
+        const submitQuizBtn = document.getElementById('submit-quiz-btn');
+
+        const scoreDisplay = document.getElementById('score-display');
+        const resultsSummary = document.getElementById('results-summary');
+        const restartQuizBtn = document.getElementById('restart-quiz-btn');
+
+        // --- Utility Functions ---
+        function showMessage(message, type = 'info') {
+            messageBox.textContent = message;
+            messageBox.className = `message-box active ${type}`;
+            setTimeout(() => {
+                messageBox.classList.remove('active');
+            }, 5000); // Hide after 5 seconds
+        }
+
+        function showSection(sectionId) {
+            document.getElementById(currentSection).classList.remove('active');
+            document.getElementById(sectionId).classList.add('active');
+            currentSection = sectionId;
+        }
+
+        function resetQuizState() {
+            questions = [];
+            userAnswers = {};
+            currentQuestionIndex = 0;
+            clearInterval(timerInterval);
+            timerElement.textContent = TIME_PER_QUESTION;
+            optionsContainer.innerHTML = '';
+            navigationButtonsContainer.innerHTML = '';
+            resultsSummary.innerHTML = '';
+            scoreDisplay.textContent = 'Your Score: 0 / 0';
+        }
+
+        // --- Authentication & Upload Handlers ---
+        async function handleRegister() {
+            const username = authUsernameInput.value;
+            const password = authPasswordInput.value;
+            try {
+                const response = await fetch(`${API_BASE_URL}/register`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username, password })
+                });
+                const data = await response.json();
+                if (response.ok) {
+                    showMessage(data.message, 'success');
+                    authUsernameInput.value = '';
+                    authPasswordInput.value = '';
+                } else {
+                    showMessage(data.message, 'error');
+                }
+            } catch (error) {
+                console.error('Registration error:', error);
+                showMessage('An error occurred during registration.', 'error');
+            }
+        }
+
+        async function handleLogin() {
+            const username = authUsernameInput.value;
+            const password = authPasswordInput.value;
+            try {
+                const response = await fetch(`${API_BASE_URL}/login`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username, password })
+                });
+                const data = await response.json();
+                if (response.ok) {
+                    showMessage(data.message, 'success');
+                    welcomeUserElement.textContent = `Hello, ${data.username}!`;
+                    showSection('quiz-section');
+                    loadQuiz(); // Load quiz questions after successful login
+                } else {
+                    showMessage(data.message, 'error');
+                }
+            } catch (error) {
+                console.error('Login error:', error);
+                showMessage('An error occurred during login.', 'error');
+            }
+        }
+
+        async function handleUploadExcel() {
+            const file = excelFileInput.files[0];
+            if (!file) {
+                showMessage('Please select an Excel file to upload.', 'info');
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append('file', file);
+
+            try {
+                showMessage('Uploading questions...', 'info');
+                const response = await fetch(`${API_BASE_URL}/upload_questions`, {
+                    method: 'POST',
+                    body: formData
+                });
+                const data = await response.json();
+                if (response.ok) {
+                    showMessage(data.message, 'success');
+                    excelFileInput.value = ''; // Clear file input
+                } else {
+                    showMessage(data.message, 'error');
+                }
+            } catch (error) {
+                console.error('Upload error:', error);
+                showMessage('An error occurred during file upload.', 'error');
+            }
+        }
+
+        // --- Quiz Logic ---
+        async function loadQuiz() {
+            try {
+                const response = await fetch(`${API_BASE_URL}/quiz/questions`);
+                const data = await response.json();
+                if (response.ok) {
+                    questions = data;
+                    if (questions.length === 0) {
+                        showMessage('No quiz questions available. Please upload questions via the admin panel.', 'info');
+                        showSection('auth-section'); // Go back to auth if no questions
+                        return;
+                    }
+                    userAnswers = {}; // Reset answers for a new quiz
+                    currentQuestionIndex = 0;
+                    renderNavigationButtons();
+                    displayQuestion();
+                } else {
+                    showMessage(data.message || 'Failed to load quiz questions.', 'error');
+                    showSection('auth-section'); // Go back to auth on error
+                }
+            } catch (error) {
+                console.error('Error loading quiz:', error);
+                showMessage('An error occurred while loading the quiz.', 'error');
+                showSection('auth-section'); // Go back to auth on error
+            }
+        }
+
+        function startTimer() {
+            clearInterval(timerInterval); // Clear any existing timer
+            let timeLeft = TIME_PER_QUESTION;
+            timerElement.textContent = timeLeft;
+
+            timerInterval = setInterval(() => {
+                timeLeft--;
+                timerElement.textContent = timeLeft;
+                if (timeLeft <= 0) {
+                    clearInterval(timerInterval);
+                    // Automatically move to the next question or submit if last
+                    if (currentQuestionIndex < questions.length - 1) {
+                        navigateToQuestion(currentQuestionIndex + 1);
+                    } else {
+                        submitQuiz(); // Submit if it's the last question
+                    }
+                }
+            }, 1000);
+        }
+
+        function displayQuestion() {
+            clearInterval(timerInterval); // Stop timer for previous question
+            if (questions.length === 0) return;
+
+            const question = questions[currentQuestionIndex];
+            questionTextElement.textContent = `${currentQuestionIndex + 1}. ${question.question_text}`;
+            optionsContainer.innerHTML = ''; // Clear previous options
+
+            const options = ['a', 'b', 'c', 'd'];
+            options.forEach(optionChar => {
+                const optionText = question[`option_${optionChar}`];
+                if (optionText) { // Only display if option text exists
+                    const label = document.createElement('label');
+                    label.className = 'option-label';
+                    label.innerHTML = `
+                        <input type="radio" name="question-${question.id}" value="${optionChar}" data-question-id="${question.id}">
+                        <span>${optionText}</span>
+                    `;
+                    optionsContainer.appendChild(label);
+
+                    // Check if this option was previously selected by the user
+                    if (userAnswers[question.id] === optionChar) {
+                        label.querySelector('input').checked = true;
+                    }
+                }
+            });
+
+            // Add event listener for option selection
+            optionsContainer.querySelectorAll('input[type="radio"]').forEach(radio => {
+                radio.addEventListener('change', (event) => {
+                    const qId = event.target.dataset.questionId;
+                    const selectedOption = event.target.value;
+                    userAnswers[qId] = selectedOption;
+                    updateNavigationButtonState(currentQuestionIndex, true); // Mark as answered
+                });
+            });
+
+            // Update navigation button active state
+            updateNavigationButtonActiveState();
+            startTimer(); // Start timer for the new question
+        }
+
+        function renderNavigationButtons() {
+            navigationButtonsContainer.innerHTML = '';
+            questions.forEach((q, index) => {
+                const button = document.createElement('button');
+                button.className = 'nav-btn';
+                button.textContent = index + 1;
+                button.dataset.index = index;
+                button.addEventListener('click', () => navigateToQuestion(index));
+                navigationButtonsContainer.appendChild(button);
+            });
+            updateNavigationButtonActiveState(); // Set initial active state
+        }
+
+        function updateNavigationButtonActiveState() {
+            navigationButtonsContainer.querySelectorAll('.nav-btn').forEach((btn, index) => {
+                btn.classList.remove('active');
+                if (index === currentQuestionIndex) {
+                    btn.classList.add('active');
+                }
+                // Also update 'answered' state
+                const questionId = questions[index].id;
+                if (userAnswers[questionId]) {
+                    btn.classList.add('answered');
+                } else {
+                    btn.classList.remove('answered');
+                }
+            });
+        }
+
+        function updateNavigationButtonState(index, answered) {
+            const navButton = navigationButtonsContainer.querySelector(`.nav-btn[data-index="${index}"]`);
+            if (navButton) {
+                if (answered) {
+                    navButton.classList.add('answered');
+                } else {
+                    navButton.classList.remove('answered');
+                }
+            }
+        }
+
+        function navigateToQuestion(index) {
+            if (index >= 0 && index < questions.length) {
+                currentQuestionIndex = index;
+                displayQuestion();
+            }
+        }
+
+        async function submitQuiz() {
+            clearInterval(timerInterval); // Stop timer
+            showMessage('Submitting your quiz...', 'info');
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/quiz/submit`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ answers: userAnswers })
+                });
+                const data = await response.json();
+
+                if (response.ok) {
+                    scoreDisplay.textContent = `Your Score: ${data.score} / ${data.total_questions}`;
+                    renderResultsSummary(data.results);
+                    showSection('results-section');
+                    showMessage('Quiz submitted successfully!', 'success');
+                } else {
+                    showMessage(data.message || 'Failed to submit quiz.', 'error');
+                }
+            } catch (error) {
+                console.error('Error submitting quiz:', error);
+                showMessage('An error occurred while submitting the quiz.', 'error');
+            }
+        }
+
+        function renderResultsSummary(results) {
+            resultsSummary.innerHTML = '';
+            results.forEach(result => {
+                const resultItem = document.createElement('div');
+                resultItem.className = `result-item ${result.is_correct ? 'correct' : 'incorrect'}`;
+
+                const userAnswerText = result.user_answer ? result.options[result.user_answer] : 'Not Answered';
+                const correctAnswerText = result.options[result.correct_answer];
+
+                resultItem.innerHTML = `
+                    <p class="question-text">${result.question_text}</p>
+                    <p class="your-answer">Your Answer: <strong>${userAnswerText}</strong></p>
+                    <p class="correct-answer">Correct Answer: <strong>${correctAnswerText}</strong></p>
+                `;
+                resultsSummary.appendChild(resultItem);
+            });
+        }
+
+        // --- Event Listeners ---
+        loginBtn.addEventListener('click', handleLogin);
+        registerBtn.addEventListener('click', handleRegister);
+        uploadExcelBtn.addEventListener('click', handleUploadExcel);
+
+        prevBtn.addEventListener('click', () => navigateToQuestion(currentQuestionIndex - 1));
+        nextBtn.addEventListener('click', () => navigateToQuestion(currentQuestionIndex + 1));
+        submitQuizBtn.addEventListener('click', submitQuiz);
+        restartQuizBtn.addEventListener('click', () => {
+            resetQuizState();
+            showSection('auth-section');
+        });
+
+        // Initial state
+        showSection('auth-section');
+    </script>
+</body>
+</html>
