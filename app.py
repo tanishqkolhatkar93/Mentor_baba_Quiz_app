@@ -21,11 +21,19 @@ def home():
 
 
 DB_CONFIG = {
-    'host': 'localhost',
-    'user': 'root', # <--- IMPORTANT: Replace with your MySQL username
-    'password': '12345', # <--- IMPORTANT: Replace with your MySQL password
-    'database': 'quiz_app_db' # <--- IMPORTANT: Ensure this database exists or create it
+    'host': 'database-1.cjm4csiy6e1f.eu-north-1.rds.amazonaws.com',  # ✅ NOT 'localhost'
+    'user': 'root',
+    'password': '12345',
+    'database': 'quiz_app_db'
 }
+
+
+# DB_CONFIG = {
+#    'host': 'localhost',
+#    'user': 'root', # <--- IMPORTANT: Replace with your MySQL username
+#    'password': '12345', # <--- IMPORTANT: Replace with your MySQL password
+#    'database': 'quiz_app_db' # <--- IMPORTANT: Ensure this database exists or create it
+# }
 
 UPLOAD_FOLDER = 'uploads'
 if not os.path.exists(UPLOAD_FOLDER):
