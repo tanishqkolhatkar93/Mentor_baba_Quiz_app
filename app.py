@@ -11,6 +11,15 @@ import json
 # You would typically load these from environment variables or a config file
 # For simplicity, they are hardcoded here. Replace with your MySQL credentials.
 
+app = Flask(__name__, static_folder='static', template_folder='templates')
+CORS(app)
+
+# Homepage (serves index.html)
+@app.route('/')
+def home():
+    return render_template('index.html')
+
+
 DB_CONFIG = {
     'host': 'localhost',
     'user': 'root', # <--- IMPORTANT: Replace with your MySQL username
