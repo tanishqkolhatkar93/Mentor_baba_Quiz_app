@@ -11,8 +11,12 @@ import json
 # You would typically load these from environment variables or a config file
 # For simplicity, they are hardcoded here. Replace with your MySQL credentials.
 
-app = Flask(__name__, static_folder='static', template_folder='templates')
-CORS(app)
+#app = Flask(__name__, static_folder='static', template_folder='templates')
+#CORS(app)
+
+from flask import Flask, render_template
+
+app = Flask(__name__)
 
 # Homepage (serves index.html)
 @app.route('/')
@@ -316,3 +320,4 @@ def submit_quiz():
 
 if __name__ == '__main__':
     app.run(debug=True, port=5000) # Run on port 5000
+
