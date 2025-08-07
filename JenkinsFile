@@ -8,9 +8,9 @@ pipeline {
     }
 
     stages {
-        stage('Checkout Code') {
+        stage('Clone') {
             steps {
-                git 'https://github.com/your-username/Mentor_baba_Quiz_app.git'
+                git 'https://github.com/tanishqkolhatkar93/Mentor_baba_Quiz_app.git'
             }
         }
 
