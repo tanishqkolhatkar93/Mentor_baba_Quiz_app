@@ -24,19 +24,18 @@ def home():
     return render_template('index.html')
 
 
-#DB_CONFIG = {
-#    'host': 'database-1.cjm4csiy6e1f.eu-north-1.rds.amazonaws.com',  # ✅ NOT 'localhost'
-#   'user': 'root',
-#    'password': '12345',
-#    'database': 'quiz_app_db'
-#}
+#DB_HOST=<RDS-ENDPOINT>
+#DB_USER=admin
+#DB_PASSWORD=yourpassword
+#DB_NAME=quiz_app_db
+
 
 
 DB_CONFIG = {
-    'host': 'localhost',
-    'user': 'root', # <--- IMPORTANT: Replace with your MySQL username
-    'password': '12345', # <--- IMPORTANT: Replace with your MySQL password
-    'database': 'quiz_app_db' # <--- IMPORTANT: Ensure this database exists or create it
+    'host': 'database-1.cixwssaw0pk2.us-east-1.rds.amazonaws.com',
+    'user': 'admin', # <--- IMPORTANT: Replace with your MySQL username
+    'password': '123456789', # <--- IMPORTANT: Replace with your MySQL password
+    'database': 'database-1' # <--- IMPORTANT: Ensure this database exists or create it
  }
 
 UPLOAD_FOLDER = 'uploads'
@@ -320,4 +319,5 @@ def submit_quiz():
 
 if __name__ == '__main__':
     app.run(debug=True, port=5000) # Run on port 5000
+
 
