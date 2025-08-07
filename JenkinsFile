@@ -4,7 +4,7 @@ pipeline {
 
     environment {
         IMAGE_NAME = 'mentorbaba-quiz-app'
-        DOCKERHUB_USER = 'your_dockerhub_username'
+        DOCKERHUB_USER = 'tanishq93'
     }
 
     stages {
@@ -41,7 +41,7 @@ pipeline {
 
         stage('Tag and Push Docker Image') {
             steps {
-                withCredentials([usernamePassword(credentialsId: 'dockerhub-creds', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
+                withCredentials([usernamePassword(credentialsId: 'dockerhub-cred', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
                     sh 'echo $PASSWORD | docker login -u $USERNAME --password-stdin'
                     sh "docker tag $DOCKERHUB_USER/$IMAGE_NAME:${env.BUILD_NUMBER} $DOCKERHUB_USER/$IMAGE_NAME:latest"
                     sh "docker push $DOCKERHUB_USER/$IMAGE_NAME:${env.BUILD_NUMBER}"
