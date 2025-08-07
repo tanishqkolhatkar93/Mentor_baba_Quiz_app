@@ -16,12 +16,16 @@ import json
 
 from flask import Flask, render_template
 
+
+
 app = Flask(__name__)
 
-# Homepage (serves index.html)
 @app.route('/')
 def home():
-    return render_template('index.html')
+    return render_template('index.html')  # This will render your login page
+
+if __name__ == '__main__':
+    app.run(debug=True, host='0.0.0.0', port=5000)
 
 
 #DB_HOST=<RDS-ENDPOINT>
@@ -319,5 +323,6 @@ def submit_quiz():
 
 if __name__ == '__main__':
     app.run(debug=True, port=5000) # Run on port 5000
+
 
 
